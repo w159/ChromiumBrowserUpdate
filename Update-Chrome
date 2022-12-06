@@ -1,25 +1,14 @@
-$ProgressPreference = 'SilentlyContinue'
 New-Item -Path C:\ -Name Utils -ItemType Directory -Force -ErrorAction SilentlyContinue
 
+$ChromiumTeamGitAPI = Invoke-RestMethod -Uri https://omahaproxy.appspot.com/json
+$ProgressPreference = 'SilentlyContinue'
 $ChromeMSI = "C:\Utils\googlechromestandaloneenterprise.msi"
+$ChromeCurrentVersion = $ChromiumTeamGitAPI | Where OS -Like win | Select -ExpandProperty Versions | Where Channel -EQ Stable | Select -ExpandProperty current_version
 
-Invoke-WebRequest -UseBasicParsing "https://dl.google.com/chrome/install/GoogleChromeStandaloneEnterprise.msi" -OutFile $ChromeMSI
-
-$ChromeLatestInstaller = $ChromeMSI
-$Shell = New-Object -COMObject Shell.Application
-$folder = Split-Path $ChromeLatestInstaller
-$file = Split-Path $ChromeLatestInstaller -Leaf
-$Shellfolder = $Shell.Namespace($folder)
-$Shellfile = $Shellfolder.ParseName($file)
-
-$ChromeVersionCheck = $Shellfolder.GetDetailsOf($Shellfile, 24)
-$ChromeCurrentVersion = $ChromeVersionCheck.Substring(0, $ChromeVersionCheck.IndexOf(' '))
-
-New-Item -Path C:\Utils -Name ChromeLatestVersion.log -ItemType File -Value $ChromeCurrentVersion -Force -ErrorAction SilentlyContinue
-
-$ChromeLatestVersion = Get-Content -Path C:\ChromeLatestVersion.log
 $ChromeCheck = Get-WmiObject win32_product | Where Name -like *Chrome* | Select -ExpandProperty Name
 $ChromeVersion = Get-WmiObject win32_product | Where Name -like *Chrome* | Select -ExpandProperty Version
+$ChromeDownloadMSILink = "https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi"
+$ChromeMSI = "C:\Utils\googlechromestandaloneenterprise.msi"
 
 If ($ChromeCheck -ne "Google Chrome"){
 
@@ -33,6 +22,7 @@ If ($ChromeCheck -ne "Google Chrome"){
 
                 If ($ChromeInstalledVersion -ne $ChromeCurrentVersion) {
                                                                        
+                                                                       Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink -OutFile $ChromeMSI
                                                                        Unblock-File $ChromeMSI
                                                                        msiexec.exe /i $ChromeMSI /qn /norestart
 
@@ -41,12 +31,13 @@ If ($ChromeCheck -ne "Google Chrome"){
                                        }
 
             If ($ChromeTestPathX86 -eq $true){
-
+                
                 $ChromeX86EXE = "C:\Program Files (x86)\Google\Chrome\Application\Chrome.exe"
                 $ChromeInstalledVersion = (Get-Item $ChromeX86EXE).VersionInfo | Select -ExpandProperty ProductVersion
 
                 If ($ChromeInstalledVersion -ne $ChromeCurrentVersion) {
                                                                        
+                                                                       Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink -OutFile $ChromeMSI
                                                                        Unblock-File $ChromeMSI
                                                                        msiexec.exe /i $ChromeMSI /qn /norestart
 
@@ -59,7 +50,8 @@ If ($ChromeCheck -ne "Google Chrome"){
 If ($ChromeVersion -ne "$ChromeLatestVersion")
 
                              {
-
+                                
+                                Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink -OutFile $ChromeMSI
                                 Unblock-File $ChromeMSI
                                 msiexec.exe /i $ChromeMSI /qn /norestart
                              
