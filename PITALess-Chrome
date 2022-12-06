@@ -1,14 +1,17 @@
 New-Item -Path C:\ -Name Utils -ItemType Directory -Force -ErrorAction SilentlyContinue
 
+
 $ChromiumTeamGitAPI = Invoke-RestMethod -Uri https://omahaproxy.appspot.com/json
 $ProgressPreference = 'SilentlyContinue'
 $ChromeMSI = "C:\Utils\googlechromestandaloneenterprise.msi"
 $ChromeCurrentVersion = $ChromiumTeamGitAPI | Where OS -Like win | Select -ExpandProperty Versions | Where Channel -EQ Stable | Select -ExpandProperty current_version
 
+
 $ChromeCheck = Get-WmiObject win32_product | Where Name -like *Chrome* | Select -ExpandProperty Name
 $ChromeVersion = Get-WmiObject win32_product | Where Name -like *Chrome* | Select -ExpandProperty Version
-$ChromeDownloadMSILink = "https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi"
+$ChromeDownloadMSILink_x64 = "https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi"
 $ChromeMSI = "C:\Utils\googlechromestandaloneenterprise.msi"
+
 
 If ($ChromeCheck -ne "Google Chrome"){
 
@@ -22,43 +25,36 @@ If ($ChromeCheck -ne "Google Chrome"){
 
                 If ($ChromeInstalledVersion -ne $ChromeCurrentVersion) {
                                                                        
-                                                                       Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink -OutFile $ChromeMSI
+                                                                       Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink_x64 -OutFile $ChromeMSI
                                                                        Unblock-File $ChromeMSI
                                                                        msiexec.exe /i $ChromeMSI /qn /norestart
+                                                                       Write-Host "Found Chrome Version $ChromeInstalledVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
 
                                                                        }
-                
                                        }
 
             If ($ChromeTestPathX86 -eq $true){
                 
                 $ChromeX86EXE = "C:\Program Files (x86)\Google\Chrome\Application\Chrome.exe"
-                $ChromeInstalledVersion = (Get-Item $ChromeX86EXE).VersionInfo | Select -ExpandProperty ProductVersion
+                $ChromeInstalledVersionX86 = (Get-Item $ChromeX86EXE).VersionInfo | Select -ExpandProperty ProductVersion
 
-                If ($ChromeInstalledVersion -ne $ChromeCurrentVersion) {
+                If ($ChromeInstalledVersionX86 -ne $ChromeCurrentVersion) {
                                                                        
-                                                                       Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink -OutFile $ChromeMSI
+                                                                       Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink_x64 -OutFile $ChromeMSI
                                                                        Unblock-File $ChromeMSI
                                                                        msiexec.exe /i $ChromeMSI /qn /norestart
+                                                                       Write-Host "Found Chrome Version $ChromeInstalledVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
 
                                                                        }
-
                                             }
-
                                       }
 
-If ($ChromeVersion -ne "$ChromeLatestVersion")
 
-                             {
+If ($ChromeVersion -ne "$ChromeLatestVersion"){
                                 
-                                Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink -OutFile $ChromeMSI
+                                Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink_x64 -OutFile $ChromeMSI
                                 Unblock-File $ChromeMSI
                                 msiexec.exe /i $ChromeMSI /qn /norestart
-                             
-                             }
-                "REG ADD \"HKLM\\SOFTWARE\\Policies\\Google\\Update\" /v \"UpdateDefault\" /t REG_DWORD /d 1 /f",
-                "REG ADD \"HKLM\\SOFTWARE\\Policies\\Google\\Update\" /v \"DisableAutoUpdateChecksCheckboxValue\" /t REG_DWORD /d 0 /f",
-                "REG ADD \"HKLM\\SOFTWARE\\Policies\\Google\\Update\" /v \"AutoUpdateCheckPeriodMinutes\" /t REG_DWORD /d 30 /f",
-                "REG ADD \"HKLM\\SOFTWARE\\Wow6432Node\\Google\\Update\" /v \"UpdateDefault\" /t REG_DWORD /d 1 /f",
-                "REG ADD \"HKLM\\SOFTWARE\\Wow6432Node\\Google\\Update\" /v \"DisableAutoUpdateChecksCheckboxValue\" /t REG_DWORD /d 0 /f",
-                "REG ADD \"HKLM\\SOFTWARE\\Wow6432Node\\Google\\Update\" /v \"AutoUpdateCheckPeriodMinutes\" /t REG_DWORD /d 30 /f"
+                                Write-Host "Found Chrome Version $ChromeInstalledVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
+
+                                              }
