@@ -20,5 +20,4 @@ Register-ScheduledTask -TaskName "Chromium Browser Updates" `
                        -Settings $Settings `
                        -RunLevel Highest `
                        –Force `
-                       -Description 'This ensures that Chromium based browsers are updated to the latest version available. `n-Created by S5 Logic; Last updated 12/6/22' `
-
+                       -Description 'This ensures that Chromium based browsers are updated to the latest version available. `n-Created by S5 Logic; Last updated 12/6/22'
