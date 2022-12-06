@@ -12,6 +12,17 @@ $ChromeVersion = Get-WmiObject win32_product | Where Name -like *Chrome* | Selec
 $ChromeDownloadMSILink_x64 = "https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi"
 $ChromeMSI = "C:\Utils\googlechromestandaloneenterprise.msi"
 
+If ($ChromeVersion -ne $ChromeLatestVersion){
+                                
+
+                                Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink_x64 -OutFile $ChromeMSI
+                                Unblock-File $ChromeMSI
+                                msiexec.exe /i $ChromeMSI /qn /norestart
+                                Write-Host "Found Chrome WMI Version $ChromeVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
+
+                                              }
+
+else{
 
 If ($ChromeCheck -ne "Google Chrome"){
 
@@ -48,13 +59,4 @@ If ($ChromeCheck -ne "Google Chrome"){
                                                                        }
                                             }
                                       }
-
-
-If ($ChromeVersion -ne "$ChromeLatestVersion"){
-                                
-                                Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink_x64 -OutFile $ChromeMSI
-                                Unblock-File $ChromeMSI
-                                msiexec.exe /i $ChromeMSI /qn /norestart
-                                Write-Host "Found Chrome WMI Version $ChromeInstalledVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
-
-                                              }
+    }
