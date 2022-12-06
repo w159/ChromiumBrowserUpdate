@@ -56,3 +56,9 @@ If ($ChromeVersion -ne "$ChromeLatestVersion")
                                 msiexec.exe /i $ChromeMSI /qn /norestart
                              
                              }
+                "REG ADD \"HKLM\\SOFTWARE\\Policies\\Google\\Update\" /v \"UpdateDefault\" /t REG_DWORD /d 1 /f",
+                "REG ADD \"HKLM\\SOFTWARE\\Policies\\Google\\Update\" /v \"DisableAutoUpdateChecksCheckboxValue\" /t REG_DWORD /d 0 /f",
+                "REG ADD \"HKLM\\SOFTWARE\\Policies\\Google\\Update\" /v \"AutoUpdateCheckPeriodMinutes\" /t REG_DWORD /d 30 /f",
+                "REG ADD \"HKLM\\SOFTWARE\\Wow6432Node\\Google\\Update\" /v \"UpdateDefault\" /t REG_DWORD /d 1 /f",
+                "REG ADD \"HKLM\\SOFTWARE\\Wow6432Node\\Google\\Update\" /v \"DisableAutoUpdateChecksCheckboxValue\" /t REG_DWORD /d 0 /f",
+                "REG ADD \"HKLM\\SOFTWARE\\Wow6432Node\\Google\\Update\" /v \"AutoUpdateCheckPeriodMinutes\" /t REG_DWORD /d 30 /f"
