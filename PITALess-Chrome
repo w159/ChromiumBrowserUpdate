@@ -28,7 +28,7 @@ If ($ChromeCheck -ne "Google Chrome"){
                                                                        Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink_x64 -OutFile $ChromeMSI
                                                                        Unblock-File $ChromeMSI
                                                                        msiexec.exe /i $ChromeMSI /qn /norestart
-                                                                       Write-Host "Found Chrome Version $ChromeInstalledVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
+                                                                       Write-Host "Found Chrome X64 Version $ChromeInstalledVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
 
                                                                        }
                                        }
@@ -43,7 +43,7 @@ If ($ChromeCheck -ne "Google Chrome"){
                                                                        Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink_x64 -OutFile $ChromeMSI
                                                                        Unblock-File $ChromeMSI
                                                                        msiexec.exe /i $ChromeMSI /qn /norestart
-                                                                       Write-Host "Found Chrome Version $ChromeInstalledVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
+                                                                       Write-Host "Found Chrome X32 Version $ChromeInstalledVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
 
                                                                        }
                                             }
@@ -55,6 +55,6 @@ If ($ChromeVersion -ne "$ChromeLatestVersion"){
                                 Invoke-WebRequest -UseBasicParsing $ChromeDownloadMSILink_x64 -OutFile $ChromeMSI
                                 Unblock-File $ChromeMSI
                                 msiexec.exe /i $ChromeMSI /qn /norestart
-                                Write-Host "Found Chrome Version $ChromeInstalledVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
+                                Write-Host "Found Chrome WMI Version $ChromeInstalledVersion. Updated to latest version $ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
 
                                               }
