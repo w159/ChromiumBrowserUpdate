@@ -4,7 +4,7 @@ $Trigger   =   (New-ScheduledTaskTrigger -Daily -At '11:15 PM'),
 $User      =   "NT AUTHORITY\SYSTEM"
 
 $Action    =   (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12}"'),
-               (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/w159/ChromiumBrowserUpdate/main/Create-BrowserUpdateTask" | Select -ExpandProperty Content | Invoke-Expression}"'),
+               (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/w159/Google-Chrome/main/PITALess-Chrome" | Select -ExpandProperty Content | Invoke-Expression}"'),
                (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Get-Process | Where Name -Like *Edge* | Stop-Process -Force}"'), 
                (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Get-Process | Where Name -Like *Chrome* | Stop-Process -Force}"'),
                (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Get-Process | Where Name -Like *Brave* | Stop-Process -Force}"'),
