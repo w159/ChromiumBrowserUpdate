@@ -13,4 +13,11 @@ $Action    =   (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-Execut
 
 $Settings  =   New-ScheduledTaskSettingsSet -RunOnlyIfNetworkAvailable -WakeToRun -AllowStartIfOnBatteries
 
-Register-ScheduledTask -TaskName "Chromium Browser Updates" -Trigger $Trigger -User $User -Action $Action -Settings $Settings -RunLevel Highest –Force -Description 'This ensures that Chromium based browsers are updated to the latest version available. `n-Created by S5 Logic; Last updated 12/6/22'
+Register-ScheduledTask -TaskName "Chromium Browser Updates" `
+                       -Trigger $Trigger `
+                       -User $User `
+                       -Action $Action `
+                       -Settings $Settings `
+                       -RunLevel Highest `
+                       –Force `
+                       -Description 'This ensures that Chromium based browsers are updated to the latest version available. `n-Created by S5 Logic; Last updated 12/6/22'
