@@ -1,0 +1,23 @@
+$Trigger   =   (New-ScheduledTaskTrigger -Daily -At '11:15 PM'), 
+               (New-ScheduledTaskTrigger -AtLogOn)
+
+$User      =   "NT AUTHORITY\SYSTEM"
+
+$Action    =   (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12}"'),
+               (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Get-Process | Where Name -Like *Edge* | Stop-Process -Force}"'), 
+               (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Get-Process | Where Name -Like *Chrome* | Stop-Process -Force}"'),
+               (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Get-Process | Where Name -Like *Brave* | Stop-Process -Force}"'),
+               (New-ScheduledTaskAction -Execute "C:\Program Files (x86)\Google\Update\GoogleUpdate.exe" -Argument "/ua /installsource scheduler"), 
+               (New-ScheduledTaskAction -Execute "C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe" -Argument "/ua /installsource scheduler"),
+               (New-ScheduledTaskAction -Execute "C:\Program Files (x86)\BraveSoftware\Update\BraveUpdate.exe" -Argument "/ua /installsource scheduler")
+
+$Settings  =   New-ScheduledTaskSettingsSet -RunOnlyIfNetworkAvailable -WakeToRun -AllowStartIfOnBatteries
+
+Register-ScheduledTask -TaskName "Chromium Browser Updates" `
+                       -Trigger $Trigger `
+                       -User $User `
+                       -Action $Action `
+                       -Settings $Settings `
+                       -RunLevel Highest `
+                       -Description "This ensures that Chromium based browsers are updated to the latest version available. `n-Created by S5 Logic; Last updated 12/6/22" `
+                       –Force
