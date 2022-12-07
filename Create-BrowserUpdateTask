@@ -1,7 +1,9 @@
 $Trigger   =   (New-ScheduledTaskTrigger -Daily -At '11:15 PM'), 
                (New-ScheduledTaskTrigger -AtLogOn)
 
+
 $User      =   "NT AUTHORITY\SYSTEM"
+
 
 $Action    =   (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12}"'),
                (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/w159/Google-Chrome/main/PITALess-Chrome" | Select -ExpandProperty Content | Invoke-Expression}"'),
@@ -12,7 +14,9 @@ $Action    =   (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-Execut
                (New-ScheduledTaskAction -Execute "C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe" -Argument "/ua /installsource scheduler"),
                (New-ScheduledTaskAction -Execute "C:\Program Files (x86)\BraveSoftware\Update\BraveUpdate.exe" -Argument "/ua /installsource scheduler")
 
+
 $Settings  =   New-ScheduledTaskSettingsSet -RunOnlyIfNetworkAvailable -WakeToRun -AllowStartIfOnBatteries
+
 
 Register-ScheduledTask -TaskName "Chromium Browser Updates" `
                        -Trigger $Trigger `
