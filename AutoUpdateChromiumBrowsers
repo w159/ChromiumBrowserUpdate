@@ -1,0 +1,94 @@
+New-Item -Path C:\ -Name Utils -ItemType Directory -Force -ErrorAction SilentlyContinue
+
+$ChromiumBrowserUpdatesScript = @"
+`$ChromiumTeamGitAPI = Invoke-RestMethod -Uri https://omahaproxy.appspot.com/json
+`$ProgressPreference = 'SilentlyContinue'
+`$ChromeMSI = "C:\Utils\googlechromestandaloneenterprise.msi"
+`$ChromeCurrentVersion = `$ChromiumTeamGitAPI | Where-Object OS -Like win | Select-Object -ExpandProperty Versions | Where-Object Channel -EQ Stable | Select-Object -ExpandProperty current_version
+
+
+`$ChromeCheck = Get-WmiObject win32_product | Where-Object Name -Like *Chrome* | Select-Object -ExpandProperty Name
+`$ChromeVersion = Get-WmiObject win32_product | Where-Object Name -Like *Chrome* | Select-Object -ExpandProperty Version
+`$ChromeDownloadMSILink_x64 = "https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi"
+`$ChromeMSI = "C:\Utils\googlechromestandaloneenterprise.msi"
+
+if (`$ChromeVersion -NE `$ChromeLatestVersion) {
+
+
+  Invoke-WebRequest -UseBasicParsing `$ChromeDownloadMSILink_x64 -OutFile `$ChromeMSI
+  Unblock-File `$ChromeMSI
+  msiexec.exe /i `$ChromeMSI /qn /norestart
+  Write-Host "Found Chrome WMI Version `$ChromeVersion. Updated to latest version `$ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
+
+}
+
+else {
+
+  if (`$ChromeCheck -NE "Google Chrome") {
+
+    `$ChromeTestPath = Test-Path "C:\Program Files\Google\Chrome\Application\Chrome.exe"
+    `$ChromeTestPathX86 = Test-Path "C:\Program Files (x86)\Google\Chrome\Application\Chrome.exe"
+
+    if (`$ChromeTestPath -EQ `$true) {
+
+      `$ChromeEXE = "C:\Program Files\Google\Chrome\Application\Chrome.exe"
+      `$ChromeInstalledVersion = (Get-Item `$ChromeEXE).VersionInfo | Select-Object -ExpandProperty ProductVersion
+
+      if (`$ChromeInstalledVersion -NE `$ChromeCurrentVersion) {
+
+        Invoke-WebRequest -UseBasicParsing `$ChromeDownloadMSILink_x64 -OutFile `$ChromeMSI
+        Unblock-File `$ChromeMSI
+        msiexec.exe /i `$ChromeMSI /qn /norestart
+        Write-Host "Found Chrome X64 Version `$ChromeInstalledVersion. Updated to latest version `$ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
+
+      }
+    }
+
+    if (`$ChromeTestPathX86 -EQ `$true) {
+
+      `$ChromeX86EXE = "C:\Program Files (x86)\Google\Chrome\Application\Chrome.exe"
+      `$ChromeInstalledVersionX86 = (Get-Item `$ChromeX86EXE).VersionInfo | Select-Object -ExpandProperty ProductVersion
+
+      if (`$ChromeInstalledVersionX86 -NE `$ChromeCurrentVersion) {
+
+        Invoke-WebRequest -UseBasicParsing `$ChromeDownloadMSILink_x64 -OutFile `$ChromeMSI
+        Unblock-File `$ChromeMSI
+        msiexec.exe /i `$ChromeMSI /qn /norestart
+        Write-Host "Found Chrome X32 Version `$ChromeInstalledVersion. Updated to latest version `$ChromeCurrentVersion" -ForegroundColor Yellow -BackgroundColor Red
+
+      }
+    }
+  }
+}
+"@
+
+New-Item -Path "C:\Utils" -Name ChromiumBrowserUpdates.ps1 -ItemType File -Value $ChromiumBrowserUpdatesScript -Force
+
+$Hours = 1,2,3,4,5,6,21,22,23 | Get-Random -Count 1
+$Minutes = Get-Random -Minimum 00 -Maximum 59
+$Time = Get-Date -Hour $Hours -Minute $Minutes -UFormat %r
+
+$Trigger = (New-ScheduledTaskTrigger -Daily -At $Time),
+(New-ScheduledTaskTrigger -AtLogOn)
+
+$User = "NT AUTHORITY\SYSTEM"
+
+$Action = (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12}"'),
+          (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -File "C:\Utils\ChromiumBrowserUpdates.ps1"'),
+          (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Get-Process | Where Name -Like *Edge* | Stop-Process -Force}"'),
+          (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Get-Process | Where Name -Like *Chrome* | Stop-Process -Force}"'),
+          (New-ScheduledTaskAction -Execute "POWERSHELL" -Argument '-ExecutionPolicy Bypass -Command "& {Get-Process | Where Name -Like *Brave* | Stop-Process -Force}"'),
+          (New-ScheduledTaskAction -Execute "C:\Program Files (x86)\Google\Update\GoogleUpdate.exe" -Argument "/ua /installsource scheduler"),
+          (New-ScheduledTaskAction -Execute "C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe" -Argument "/ua /installsource scheduler"),
+          (New-ScheduledTaskAction -Execute "C:\Program Files (x86)\BraveSoftware\Update\BraveUpdate.exe" -Argument "/ua /installsource scheduler")
+
+$Settings = New-ScheduledTaskSettingsSet -RunOnlyIfNetworkAvailable -WakeToRun -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -RestartOnIdle
+
+Register-ScheduledTask -TaskName "Chromium Browser Updates" `
+   -Trigger $Trigger `
+   -User $User `
+   -Action $Action `
+   -Settings $Settings `
+   -RunLevel Highest `
+   –Force `
+   -Description "This ensures that Chromium based browsers are updated to the latest version available. `n-Created by JM with S5 Logic; Last updated 12/7/22"
