@@ -1,4 +1,4 @@
-# ChromiumBrowserUpdate
+# AutoUpdateChromiumBrowser
 Keeps Google Chrome up to date based on what Google has published as the latest version
 
 Running the Auto Update script creates a scheduled task to do the following:
